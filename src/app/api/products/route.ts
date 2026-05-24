@@ -1,43 +1,21 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function GET() {
 
-  try {
-
-    const products = await prisma.product.findMany({
-      include: {
-        inventories: {
-          include: {
-            warehouse: true,
-          },
+  return NextResponse.json([
+    {
+      id: '1',
+      name: 'Wireless Headphones',
+      stock: [
+        {
+          warehouseId: '1',
+          warehouse: 'Mumbai Warehouse',
+          totalStock: 10,
+          reservedStock: 2,
+          availableStock: 8,
         },
-      },
-    });
+      ],
+    },
+  ]);
 
-    const formattedProducts = products.map((product) => ({
-      id: product.id,
-      name: product.name,
-
-      stock: product.inventories.map((inventory) => ({
-        warehouseId: inventory.warehouse.id,
-        warehouse: inventory.warehouse.name,
-        totalStock: inventory.totalStock,
-        reservedStock: inventory.reservedStock,
-        availableStock:
-          inventory.totalStock - inventory.reservedStock,
-      })),
-    }));
-
-    return NextResponse.json(formattedProducts);
-
-  } catch (error) {
-
-    console.error(error);
-
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
-  }
 }
