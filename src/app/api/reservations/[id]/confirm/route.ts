@@ -1,79 +1,32 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
 
   try {
 
-    const reservation = await prisma.reservation.findUnique({
+    const body = await req.json();
+
+    const { id } = body;
+
+    const reservation = await prisma.reservation.update({
       where: {
-        id: params.id,
-      },
-    });
-
-    if (!reservation) {
-      return NextResponse.json(
-        { error: 'Reservation not found' },
-        { status: 404 }
-      );
-    }
-
-    if (reservation.status !== 'PENDING') {
-      return NextResponse.json(
-        { error: 'Reservation already processed' },
-        { status: 400 }
-      );
-    }
-
-    if (new Date() > reservation.expiresAt) {
-
-      return NextResponse.json(
-        { error: 'Reservation expired' },
-        { status: 410 }
-      );
-    }
-
-    // reduce stock permanently
-    await prisma.inventory.updateMany({
-      where: {
-        productId: reservation.productId,
-        warehouseId: reservation.warehouseId,
+        id,
       },
 
       data: {
-        totalStock: {
-          decrement: reservation.quantity,
-        },
-
-        reservedStock: {
-          decrement: reservation.quantity,
-        },
+        status: 'CONFIRMED',
       },
     });
 
-    // confirm reservation
-    const updatedReservation =
-      await prisma.reservation.update({
-        where: {
-          id: reservation.id,
-        },
-
-        data: {
-          status: 'CONFIRMED',
-        },
-      });
-
-    return NextResponse.json(updatedReservation);
+    return NextResponse.json(reservation);
 
   } catch (error) {
 
     console.error(error);
 
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to confirm reservation' },
       { status: 500 }
     );
   }
