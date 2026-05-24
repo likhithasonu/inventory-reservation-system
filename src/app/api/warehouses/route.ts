@@ -1,21 +1,16 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function GET() {
 
-  try {
+  return NextResponse.json([
+    {
+      id: '1',
+      name: 'Mumbai Warehouse',
+    },
+    {
+      id: '2',
+      name: 'Hyderabad Warehouse',
+    },
+  ]);
 
-    const warehouses = await prisma.warehouse.findMany();
-
-    return NextResponse.json(warehouses);
-
-  } catch (error) {
-
-    console.error(error);
-
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }
 }
