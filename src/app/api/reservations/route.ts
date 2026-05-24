@@ -3,8 +3,10 @@ import { NextResponse } from 'next/server';
 export async function POST() {
 
   return NextResponse.json({
-    id: '1',
-    status: 'PENDING',
+    id: 'res_001',
+    status: 'RELEASED',
+    message: 'Reservation released successfully',
   });
 
 }
+

@@ -6,10 +6,12 @@ export async function GET() {
     {
       id: '1',
       name: 'Mumbai Warehouse',
+      location: 'Mumbai, India',
     },
     {
       id: '2',
       name: 'Hyderabad Warehouse',
+      location: 'Hyderabad, India',
     },
   ]);
 
