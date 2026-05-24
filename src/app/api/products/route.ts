@@ -17,22 +17,15 @@ export async function GET() {
 
     const formattedProducts = products.map((product) => ({
       id: product.id,
-
       name: product.name,
 
       stock: product.inventories.map((inventory) => ({
-
         warehouseId: inventory.warehouse.id,
-
         warehouse: inventory.warehouse.name,
-
         totalStock: inventory.totalStock,
-
         reservedStock: inventory.reservedStock,
-
         availableStock:
           inventory.totalStock - inventory.reservedStock,
-
       })),
     }));
 
@@ -43,7 +36,7 @@ export async function GET() {
     console.error(error);
 
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch products' },
       { status: 500 }
     );
   }
